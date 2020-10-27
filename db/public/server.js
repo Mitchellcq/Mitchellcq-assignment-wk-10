@@ -29,6 +29,7 @@ app.use(express.json());
 // ================================================================================
 
 //HTML routes
+// ================================================================================
 app.get("/notes", function (req, res) {
     res.sendFile(path.join(__dirname, "../notes.html"));
 });
@@ -39,30 +40,30 @@ app.get("*", function (req, res) {
 });
 
 //API routes
+// ================================================================================
 app.get("/api/notes", function (req, res) {
-    res.json(/**db.json */);
+    res.json(notesArray);
 });
 
 app.post("/api/notes", function (req, res) {
-    /**notes array */.push(req.body)
+
+    let newNote = req.body;
+    let uniqueId = notesArray.length;
+    console.log(uniqueId);
+    newNote.id = uniqueId;
+    notesArray.push(newNote);
+
+    fs.writeFileSync(path.resolve('./db/db.json'), JSON.stringify(notesArray), function (err) {
+        if (err) throw (err);
+    });
 });
 
 app.post("/api/notes/:id", function (res, req) {
     var id = req.body.id;
-    var removeByAttr = function (arr, attr, value) {
-        var i = arr.length;
-        while (i--) {
-            if (arr[i]
-                && arr[i].hasOwnProperty(attr)
-                && (arguments.length > 2 && arr[i][attr] === value)) {
 
-                arr.splice(i, 1);
+    var newReqBody = removeByAttr(notesArray, 'id', id);
 
-            }
-        }
-        return arr;
-    };
-    removeByAttr(/**notes array */, 'id', id);
+    fs.writeFileSync(path.resolve('./db/db.json'), JSON.stringify(newReqBody));
 })
 
 // =============================================================================
@@ -73,3 +74,26 @@ app.post("/api/notes/:id", function (res, req) {
 app.listen(PORT, function () {
     console.log("App listening on PORT: " + PORT);
 });
+
+// =============================================================================
+// FUNCTIONS
+// The below code is called by various api requests
+// =============================================================================
+
+
+var notesArray = JSON.parse(fs.readFileSync('./db/db.json', "utf-8"));
+console.log(notesArray);
+
+var removeByAttr = function (arr, attr, value) {
+    var i = arr.length;
+    while (i--) {
+        if (arr[i]
+            && arr[i].hasOwnProperty(attr)
+            && (arguments.length > 2 && arr[i][attr] === value)) {
+
+            arr.splice(i, 1);
+
+        }
+    }
+    return arr;
+};
