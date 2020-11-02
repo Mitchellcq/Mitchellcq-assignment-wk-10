@@ -41,6 +41,12 @@ module.exports = function (app) {
 
             }
         }
+
+        for (let i = 0; i < notesArray.length; i++) {
+            let newId = i;
+            notesArray[i].id = newId;
+        }
+
         fs.writeFileSync('../db.json', JSON.stringify(notesArray));
 
         res.json(data);

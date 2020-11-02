@@ -4,9 +4,6 @@
 // ==============================================================================
 
 var express = require("express");
-var fs = require("fs");
-var notesArray = JSON.parse(fs.readFileSync('../db.json', "utf-8"));
-
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
