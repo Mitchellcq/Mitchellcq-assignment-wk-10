@@ -5,7 +5,6 @@
 
 var express = require("express");
 
-
 // ==============================================================================
 // EXPRESS CONFIGURATION
 // This sets up the basic properties for our express server
@@ -22,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/assets", express.static("./assets"));
 
+//requires the abstracted routes
 require("./routing/html-routes")(app);
 require("./routing/api-routes")(app);
 
