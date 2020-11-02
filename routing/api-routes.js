@@ -1,4 +1,5 @@
 const fs = require("fs");
+const bodyParser = require('body-parser');
 var data = fs.readFileSync("./db/db.json", "utf8");
 var notesArray = JSON.parse(data);
 
@@ -29,6 +30,7 @@ module.exports = function (app) {
     });
 
     app.delete("/api/notes/:id", function (res, req) {
+        console.log(req.params.id);
         var noteId = req.params.id;
 
         console.log(`Deleting note with id ${noteId}`);
