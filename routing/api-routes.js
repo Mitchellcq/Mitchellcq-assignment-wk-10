@@ -9,15 +9,19 @@ module.exports = function (app) {
         res.json(notesArray);
     });
 
+    app.get("/api/notes/:id", function (req, res) {
+        res.json(notesArray[Number(req.params.id)]);
+    });
+
     app.post("/api/notes", function (req, res) {
 
         let newNote = req.body;
-        let uniqueId = notesArray.length;
+        let uniqueId = (notesArray.length).toString();
         console.log(uniqueId);
         newNote.id = uniqueId;
         notesArray.push(newNote);
 
-        fs.writeFileSync('../db.json', JSON.stringify(notesArray), function (err) {
+        fs.writeFileSync('./db/db.json', JSON.stringify(notesArray), function (err) {
             if (err) throw err;
         });
 
@@ -25,7 +29,7 @@ module.exports = function (app) {
     });
 
     app.delete("/api/notes/:id", function (res, req) {
-        var noteId = req.body.id;
+        var noteId = req.params.id;
 
         console.log(`Deleting note with id ${noteId}`);
 
@@ -34,7 +38,7 @@ module.exports = function (app) {
             return currentNote.id != noteId;
         });
         for (currentNote of notesArray) {
-            currentNote.id = newId;
+            currentNote.id = newId.toString();
             newId++;
         }
 
