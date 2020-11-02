@@ -59,12 +59,31 @@ app.post("/api/notes", function (req, res) {
     writeToDatabase(notesArray);
 });
 
-app.post("/api/notes/:id", function (res, req) {
+app.get("/api/notes/:id", function (req, res) {
+
+    res.json(data[Number(req.params.id)]);
+
+});
+
+app.delete("/api/notes/:id", function (res, req) {
     var id = req.body.id;
 
-    var newNotesArray = removeByAttr(notesArray, 'id', id);
+    console.log(`Deleting note with id ${noteId}`);
 
-    writeToDatabase(newNotesArray);
+    var i = notesArray.length;
+    while (i--) {
+        if (notesArray[i]
+            && notesArray[i].hasOwnProperty('id')
+            && notesArray[i].id === id) {
+
+            notesArray.splice(i, 1);
+
+        }
+    }
+    fs.writeFileSync('../db.json', JSON.stringify(notesArray));
+
+    res.json(data);
+
 });
 
 // =============================================================================
@@ -81,18 +100,19 @@ app.listen(PORT, function () {
 // The below code is called by various api requests
 // =============================================================================
 
+//not working, put inline?
 function removeByAttr(arr, attr, value) {
     var i = arr.length;
     while (i--) {
         if (arr[i]
             && arr[i].hasOwnProperty(attr)
-            && (arguments.length > 2 && arr[i][attr] === value)) {
+            && (arguments.length > 2 && arr[i].attr === value)) {
 
             arr.splice(i, 1);
 
         }
     }
-    return arr;
+    writeToDatabase(arr);
 };
 
 function writeToDatabase(arr) {
