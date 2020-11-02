@@ -1,5 +1,5 @@
 const fs = require("fs");
-var data = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+var data = JSON.parse(fs.readFileSync("../db.json", "utf8"));
 
 module.exports = function (app) {
 
@@ -22,33 +22,25 @@ module.exports = function (app) {
 
     app.get("/api/notes/:id", function (req, res) {
 
-        res.json(data[Number(req.params.id)]);
+        res.json(notesArray[Number(req.params.id)]);
 
     });
 
     app.delete("/api/notes/:id", function (res, req) {
-        var id = req.body.id;
+        var noteId = req.body.id;
 
         console.log(`Deleting note with id ${noteId}`);
 
-        var i = notesArray.length;
-        while (i--) {
-            if (notesArray[i]
-                && notesArray[i].hasOwnProperty('id')
-                && notesArray[i].id === id) {
-
-                notesArray.splice(i, 1);
-
-            }
-        }
-
-        for (let i = 0; i < notesArray.length; i++) {
-            let newId = i;
-            notesArray[i].id = newId;
+        let newId = 0;
+        notesArray = notesArray.filter(currentNote => {
+            return currentNote.id != noteId;
+        });
+        for (currentNote of notesArray) {
+            currentNote.id = newId;
+            newId++;
         }
 
         fs.writeFileSync('../db.json', JSON.stringify(notesArray));
-
         res.json(data);
 
     });

@@ -5,6 +5,7 @@
 
 var express = require("express");
 
+
 // ==============================================================================
 // EXPRESS CONFIGURATION
 // This sets up the basic properties for our express server
@@ -20,6 +21,9 @@ var PORT = process.env.PORT || 8080;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/assets", express.static("./assets"));
+
+require("./routing/html-routes")(app);
+require("./routing/api-routes")(app);
 
 // =============================================================================
 // LISTENER
