@@ -6,6 +6,8 @@
 var express = require("express");
 var path = require("path");
 var fs = require("fs");
+var notesArray = JSON.parse(fs.readFileSync('../db.json', "utf-8"));
+
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
@@ -21,6 +23,7 @@ var PORT = process.env.PORT || 8080;
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/assets", express.static("./assets"));
 
 // ================================================================================
 // ROUTER
@@ -28,15 +31,15 @@ app.use(express.json());
 // These routes give our server a "map" of how to respond when users visit or request data from various URLs.
 // ================================================================================
 
-//HTML routes
+//HTML routes (complete)
 // ================================================================================
 app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "../notes.html"));
+    res.sendFile(path.join(__dirname, "../public/notes.html"));
 });
 
 // If no matching route is found default to home
 app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "../index.html"));
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 //API routes
@@ -53,18 +56,16 @@ app.post("/api/notes", function (req, res) {
     newNote.id = uniqueId;
     notesArray.push(newNote);
 
-    fs.writeFileSync(path.resolve('./db/db.json'), JSON.stringify(notesArray), function (err) {
-        if (err) throw (err);
-    });
+    writeToDatabase(notesArray);
 });
 
 app.post("/api/notes/:id", function (res, req) {
     var id = req.body.id;
 
-    var newReqBody = removeByAttr(notesArray, 'id', id);
+    var newNotesArray = removeByAttr(notesArray, 'id', id);
 
-    fs.writeFileSync(path.resolve('./db/db.json'), JSON.stringify(newReqBody));
-})
+    writeToDatabase(newNotesArray);
+});
 
 // =============================================================================
 // LISTENER
@@ -80,11 +81,7 @@ app.listen(PORT, function () {
 // The below code is called by various api requests
 // =============================================================================
 
-
-var notesArray = JSON.parse(fs.readFileSync('./db/db.json', "utf-8"));
-console.log(notesArray);
-
-var removeByAttr = function (arr, attr, value) {
+function removeByAttr(arr, attr, value) {
     var i = arr.length;
     while (i--) {
         if (arr[i]
@@ -96,4 +93,12 @@ var removeByAttr = function (arr, attr, value) {
         }
     }
     return arr;
+};
+
+function writeToDatabase(arr) {
+    fs.writeFileSync('../db.json', JSON.stringify(arr), function (err) {
+        if (err) throw (err);
+    });
+
+    res.json(data);
 };
