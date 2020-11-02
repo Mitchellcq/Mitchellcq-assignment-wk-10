@@ -17,13 +17,11 @@ module.exports = function (app) {
         newNote.id = uniqueId;
         notesArray.push(newNote);
 
-        fs.writeFileSync('../db.json', JSON.stringify(notesArray));
-    });
+        fs.writeFileSync('../db.json', JSON.stringify(notesArray), function (err) {
+            if (err) throw err;
+        });
 
-    app.get("/api/notes/:id", function (req, res) {
-
-        res.json(notesArray[Number(req.params.id)]);
-
+        res.json(notesArray);
     });
 
     app.delete("/api/notes/:id", function (res, req) {
@@ -41,7 +39,7 @@ module.exports = function (app) {
         }
 
         fs.writeFileSync('../db.json', JSON.stringify(notesArray));
-        res.json(data);
+        res.json(notesArray);
 
     });
 }
