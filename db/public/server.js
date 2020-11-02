@@ -4,7 +4,6 @@
 // ==============================================================================
 
 var express = require("express");
-var path = require("path");
 var fs = require("fs");
 var notesArray = JSON.parse(fs.readFileSync('../db.json', "utf-8"));
 
@@ -25,67 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/assets", express.static("./assets"));
 
-// ================================================================================
-// ROUTER
-// The below points our server to a series of "route" files.
-// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
-// ================================================================================
-
-//HTML routes (complete)
-// ================================================================================
-app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/notes.html"));
-});
-
-// If no matching route is found default to home
-app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-
-//API routes
-// ================================================================================
-app.get("/api/notes", function (req, res) {
-    res.json(notesArray);
-});
-
-app.post("/api/notes", function (req, res) {
-
-    let newNote = req.body;
-    let uniqueId = notesArray.length;
-    console.log(uniqueId);
-    newNote.id = uniqueId;
-    notesArray.push(newNote);
-
-    writeToDatabase(notesArray);
-});
-
-app.get("/api/notes/:id", function (req, res) {
-
-    res.json(data[Number(req.params.id)]);
-
-});
-
-app.delete("/api/notes/:id", function (res, req) {
-    var id = req.body.id;
-
-    console.log(`Deleting note with id ${noteId}`);
-
-    var i = notesArray.length;
-    while (i--) {
-        if (notesArray[i]
-            && notesArray[i].hasOwnProperty('id')
-            && notesArray[i].id === id) {
-
-            notesArray.splice(i, 1);
-
-        }
-    }
-    fs.writeFileSync('../db.json', JSON.stringify(notesArray));
-
-    res.json(data);
-
-});
-
 // =============================================================================
 // LISTENER
 // The below code effectively "starts" our server
@@ -95,30 +33,3 @@ app.listen(PORT, function () {
     console.log("App listening on PORT: " + PORT);
 });
 
-// =============================================================================
-// FUNCTIONS
-// The below code is called by various api requests
-// =============================================================================
-
-//not working, put inline?
-function removeByAttr(arr, attr, value) {
-    var i = arr.length;
-    while (i--) {
-        if (arr[i]
-            && arr[i].hasOwnProperty(attr)
-            && (arguments.length > 2 && arr[i].attr === value)) {
-
-            arr.splice(i, 1);
-
-        }
-    }
-    writeToDatabase(arr);
-};
-
-function writeToDatabase(arr) {
-    fs.writeFileSync('../db.json', JSON.stringify(arr), function (err) {
-        if (err) throw (err);
-    });
-
-    res.json(data);
-};
