@@ -1,11 +1,13 @@
 const fs = require("fs");
-var notesArray = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+var data = fs.readFileSync("./db/db.json", "utf8");
+var notesArray = JSON.parse(data);
 
 module.exports = function (app) {
 
     //API routes
     // ================================================================================
     app.get("/api/notes", function (req, res) {
+        console.log(notesArray);
         res.json(notesArray);
     });
 
@@ -21,9 +23,7 @@ module.exports = function (app) {
         newNote.id = uniqueId;
         notesArray.push(newNote);
 
-        fs.writeFileSync('./db/db.json', JSON.stringify(notesArray), function (err) {
-            if (err) throw err;
-        });
+        fs.writeFileSync('./db/db.json', JSON.stringify(notesArray));
 
         res.json(notesArray);
     });
